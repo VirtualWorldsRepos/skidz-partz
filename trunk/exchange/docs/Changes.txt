@@ -1,0 +1,6 @@
+Skidz Partz - Exchange: Content Management System
+=================================
+
+April 2010: Version 1.0
+=====================
+- This is the first Skidz Partz - Exchange release. Please read the file Credits.txt to know from where the stuff comes from.
