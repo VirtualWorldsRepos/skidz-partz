@@ -1,0 +1,11 @@
+Skidz Partz - Exchange: Content Management System
+=================================
+
+To Upgrade from previous Skidz Partz - Exchange versions just install
+the new files and from your web browser launch after
+copying the selected upgrade from "upgrades" directory
+to your site's root (/) dir:
+
+	http://www.sitename.com/upgrade10-15.php
+
+That's all...

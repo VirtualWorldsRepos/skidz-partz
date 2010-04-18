@@ -1,0 +1,8 @@
+Skidz Partz - Exchange: Content Management System
+=================================
+
+
+- Skidz Partz - Exchange CMS has been initialy based on PHP-Nuke 8.1
+  Copyright (c) 2008 by Alberto Moreno
+  http://phpnuke.org
+  Note: Other PHP-Nuke's parts are copyright by their respective Copyright holders, see PHP-Nuke's source code for more information.
