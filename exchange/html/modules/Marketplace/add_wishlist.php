@@ -33,12 +33,12 @@ function item_id($id)
 	echo "<table width=\"100%\" valign=\"top\"><tr><td valign='top'>";
 	Open_Table();
 	$ThemeSel = get_theme();
-	$result = $db->sql_query("SELECT id, category, subcategory, inventory, slurl, title, description, permissions, prims, lindens, dollars, quantity, adult, sales, messages, enhancements, image, thumbnail, firstname, lastname from " . $prefix . "_marketplace_items where id='".$id."'");
+	$result = $db->sql_query("SELECT id, category, subcategory, inventory, slurl, title, description, permissions, prims, lindens, quantity, adult, sales, messages, enhancements, image, thumbnail, firstname, lastname from " . $prefix . "_marketplace_items where id='".$id."'");
 	while($row = $db->sql_fetchrow($result)) 
     {
 	   $item_id = intval($row['id']);
 	   $title = filter($row['title'], "nohtml");
-	   $dollars = intval($row['dollars']);
+	   $lindens = intval($row['lindens']);
 	   $image = filter($row['image'], "nohtml");
 	   $thumbnail = filter($row['thumbnail'], "nohtml");
 	   echo '<center><font class="title"><b>'._ADD_WISHLIST.'</b></font></center><br />
@@ -52,7 +52,7 @@ function item_id($id)
 	         <tr><td nowrap><b>Title</b><br />
 			 <input type="text" name="title" value="'.$title.'" size="40" maxlength="255"></td><td>
              <tr><td nowrap><b>Price*</b><br />
-			 <input type="text" name="amount" value="'.$dollars.'" size="10" maxlength="255" disabled="disabled" /></td><td>
+			 <input type="text" name="amount" value="'.$lindens.'" size="10" maxlength="255" disabled="disabled" /></td><td>
 			 <tr><td nowrap><b>Priority</b><br /></td><td>
 			 <tr><td nowrap><select name="priority">
 	         <option value="5" id="veryhigh">I neeeed it!</option>
@@ -97,7 +97,7 @@ function add_wishlist($item_id, $title, $amount, $priority, $quantity, $tags, $n
        {
 	      $item_id = intval($item_id);
 		  $title = filter($title, "nohtml", 1); 
-	 	  $amount = intval($row['dollars']);
+	 	  $amount = intval($row['lindens']);
 	 	  $priority = intval($priority);
 	 	  $quantity = intval($quantity);
 	 	  $tags = filter($tags, "nohtml", 1);
@@ -117,7 +117,7 @@ switch($op)
    break;
    
    case "add_wishlist":
-   add_wishlist($item_id, $title, $dollars, $priority, $quantity, $tags, $notes, $access);
+   add_wishlist($item_id, $title, $lindens, $priority, $quantity, $tags, $notes, $access);
    break;
 }
 ?>
