@@ -40,7 +40,6 @@ function latest_wishes($sid, $min, $orderby, $show)
     include('modules/'.$module_name.'/config.php');	
 	menu('New');
     echo "<br />";
-	//echo "<table width=\"100%\" valign=\"top\"><tr><td valign='top'>";
 	if (!isset($min)) $min=0;
     if (!isset($max)) $max=$min+$perpage;
     if(!empty($orderby)) 
@@ -56,8 +55,7 @@ function latest_wishes($sid, $min, $orderby, $show)
     }	
 	Open_Table();
 	echo '<center><font class="title"><b>'._TODAYS_WISHES.'</b></font></center><br />';
-	//id 	item_id 	title 	amount 	priority 	quantity 	tags 	notes 	access 	firstname 	lastname
-    if(!is_numeric($min))
+	if(!is_numeric($min))
 	{
         $min=0;
     }	
@@ -67,8 +65,8 @@ function latest_wishes($sid, $min, $orderby, $show)
 	$x=0;
 	while(list($id, $item_id, $title, $amount, $priority, $quantity, $tags, $notes, $access, $firstname, $lastname) = $db->sql_fetchrow($wishlist)) 
 	{
-	   $products = $db->sql_query("SELECT id, title, lindens, dollars, image, thumbnail, firstname, lastname, date, hits, rating, votes, comments FROM ".$prefix."_marketplace_items WHERE id = '".$item_id."'"); // order by date DESC
-	   while(list($id2, $title2, $lindens2, $dollars2, $image2, $thumbnail2, $firstname2, $lastname2, $date2, $hits2, $rating2, $votes2, $comments2) = $db->sql_fetchrow($products)) 
+	   $products = $db->sql_query("SELECT id, title, lindens, image, thumbnail, firstname, lastname, date, hits, rating, votes, comments FROM ".$prefix."_marketplace_items WHERE id = '".$item_id."'"); // order by date DESC
+	   while(list($id2, $title2, $lindens2, $image2, $thumbnail2, $firstname2, $lastname2, $date2, $hits2, $rating2, $votes2, $comments2) = $db->sql_fetchrow($products)) 
 	   {
 	   if(!is_numeric($sid))
 	   {
@@ -94,7 +92,7 @@ function latest_wishes($sid, $min, $orderby, $show)
        }
        echo "</td>"
        ."<td class=\"row1\" valign=\"top\" style=\"height: 10px;\">"
-       ."Wished by :$firstname $lastname</td>" //<img src=\"modules/".$module_name."/images/gift.png\" alt=\"{dl_item.L_NOSCREENS}\" title=\"{dl_item.L_NOSCREENS}\" />
+       ."Wished by :$firstname $lastname</td>"
        ."<td class=\"row1\" rowspan=\"2\" align=\"center\" style=\"width: 75px;\"><a href=\"index.php?name=Marketplace&file=gift_option&op=item_id&amp;id=".$item_id."\"><img src=\"modules/".$module_name."/images/gift.png\" alt=\""._GIFT."\" title=\""._GIFT."\"/></a></td>"
        ."</tr><tr>"
        ."<td class=\"row1\" style=\"vertical-align: top;\"><span class=\"genmed\">$notes</span></td>"
@@ -112,19 +110,21 @@ function latest_wishes($sid, $min, $orderby, $show)
 	// end while
     $orderby = convertorderbyout($orderby);
 	// Calculates how many pages exist.  Which page one should be on, etc...
-    $downloadpagesint = ($totalselecteddownloads / $perpage);
-    $downloadpageremainder = ($totalselecteddownloads % $perpage);
-    if ($downloadpageremainder != 0) {
-        $downloadpages = ceil($downloadpagesint);
-        if ($totalselecteddownloads < $perpage) {
-    	    $downloadpageremainder = 0;
+    // downloadpageremainder => wishpageremainder
+	$wishpagesint = ($wishpageremainder / $perpage);
+    $wishpageremainder = ($wishpageremainder % $perpage);
+	// downloadpages => wishpages
+    if ($wishpageremainder != 0) {
+        $wishpages = ceil($wishpagesint);
+        if ($wishpageremainder < $perpage) {
+    	    $wishpageremainder = 0;
         }
     } else {
-    	$downloadpages = $downloadpagesint;
+    	$wishpages = $wishpagesint;
     }        
     
 	// Page Numbering
-    if ($downloadpages!=1 && $downloadpages!=0) 
+    if ($wishpages!=1 && $wishpages!=0) 
 	{
 	echo "<br><br>"
     	    .""._SELECTPAGE.": ";
@@ -135,7 +135,7 @@ function latest_wishes($sid, $min, $orderby, $show)
       	}
         $counter = 1;
         $currentpage = ($max / $perpage);
-        while ($counter<=$downloadpages ) {
+        while ($counter<=$wishpages ) {
     	    $cpage = $counter;
             $mintemp = ($perpage * $counter) - $perpage;
             if ($counter == $currentpage) {
@@ -178,26 +178,26 @@ function search($query, $min, $orderby, $show)
 		$show=$perpage;
     }
     $query1 = filter($query, "nohtml", 1);
-    $query1 = addslashes($query1);	
+    $query1 = addslashes($query1);
 	Open_Table();
 	echo '<center><font class="title"><b>'._SEARCHRESULTS4.'</b>&nbsp;'.$query1.'</font></center><br />';
-	//id 	item_id 	title 	amount 	priority 	quantity 	tags 	notes 	access 	firstname 	lastname
-    if(!is_numeric($min))
+	if(!is_numeric($min))
 	{
         $min=0;
     }	
 	$wishlist = $db->sql_query("SELECT id, item_id, title, amount, priority, quantity, tags, notes, access, firstname, lastname FROM ".$prefix."_marketplace_wishlist WHERE title LIKE '%$query1%' ORDER BY $orderby LIMIT $min,$perpage"); // WHERE title LIKE '%$query1%' ORDER BY $orderby LIMIT $min,$perpage 
 	$fullcountresult=$db->sql_query("SELECT * FROM ".$prefix."_marketplace_wishlist WHERE title LIKE '%$query1%'");
-    $totalselecteddownloads = $db->sql_numrows($fullcountresult);
+    // totalselectedwishes
+	$totalselectedwishes = $db->sql_numrows($fullcountresult);
 	$x=0;
-	if (!empty($query1) && $totalselecteddownloads>0) 
+	if (!empty($query1) && $totalselectedwishes>0) 
 	{
 	//if($nrows>0)
 	//{
 	while(list($id, $item_id, $title, $amount, $priority, $quantity, $tags, $notes, $access, $firstname, $lastname) = $db->sql_fetchrow($wishlist)) 
 	{
-	   $products = $db->sql_query("SELECT id, title, lindens, dollars, image, thumbnail, firstname, lastname, date, hits, rating, votes, comments FROM ".$prefix."_marketplace_items WHERE id = '".$item_id."'"); // order by date DESC
-	   while(list($id2, $title2, $lindens2, $dollars2, $image2, $thumbnail2, $firstname2, $lastname2, $date2, $hits2, $rating2, $votes2, $comments2) = $db->sql_fetchrow($products)) 
+	   $products = $db->sql_query("SELECT id, title, lindens, image, thumbnail, firstname, lastname, date, hits, rating, votes, comments FROM ".$prefix."_marketplace_items WHERE id = '".$item_id."'"); // order by date DESC
+	   while(list($id2, $title2, $lindens2, $image2, $thumbnail2, $firstname2, $lastname2, $date2, $hits2, $rating2, $votes2, $comments2) = $db->sql_fetchrow($products)) 
 	   {
 	   if(!is_numeric($sid))
 	   {
@@ -231,10 +231,6 @@ function search($query, $min, $orderby, $show)
        ."<td align=\"center\" class=\"row2\">$".$amount."</td>"
 	   ."<td align=\"center\" class=\"row2\">$tags</td>"
        ."<td class=\"row2\" colspan=\"2\">";
-	   //foreach (array($tags) as $tag)
-	   //{
-	      //echo $tag;
-		//}
 		if($priority == 5) echo "Very High";
 		if($priority == 4) echo "High";
 		if($priority == 3) echo "Normal";
@@ -259,19 +255,20 @@ function search($query, $min, $orderby, $show)
 	}
     $orderby = convertorderbyout($orderby);
 	// Calculates how many pages exist.  Which page one should be on, etc...
-    $downloadpagesint = ($totalselecteddownloads / $perpage);
-    $downloadpageremainder = ($totalselecteddownloads % $perpage);
-    if ($downloadpageremainder != 0) {
-        $downloadpages = ceil($downloadpagesint);
-        if ($totalselecteddownloads < $perpage) {
-    	    $downloadpageremainder = 0;
+    // totalselectedwishes => totalselectedwishes
+	$wishpagesint = ($totalselectedwishes / $perpage);
+    $wishpageremainder = ($totalselectedwishes % $perpage);
+    if ($wishpageremainder != 0) {
+        $wishpages = ceil($wishpagesint);
+        if ($totalselectedwishes < $perpage) {
+    	    $wishpageremainder = 0;
         }
     } else {
-    	$downloadpages = $downloadpagesint;
+    	$wishpages = $wishpagesint;
     }        
     
 	// Page Numbering
-    if ($downloadpages!=1 && $downloadpages!=0) 
+    if ($wishpages!=1 && $wishpages!=0) 
 	{
 	echo "<br><br>"
     	    .""._SELECTPAGE.": ";
@@ -282,7 +279,7 @@ function search($query, $min, $orderby, $show)
       	}
         $counter = 1;
         $currentpage = ($max / $perpage);
-        while ($counter<=$downloadpages ) {
+        while ($counter<=$wishpages ) {
     	    $cpage = $counter;
             $mintemp = ($perpage * $counter) - $perpage;
             if ($counter == $currentpage) {
@@ -303,17 +300,10 @@ function search($query, $min, $orderby, $show)
 	include("footer.php");
 }
 
-if (isset($lid) && isset ($firstname) && isset ($lastname) && isset ($rating)) {
-    $ret = add_review($lid, $firstname, $lastname, $rating, $host_name, $comments);
-}
-
 if (!(isset($mode))) { $mode = ""; }
 if (!(isset($min))) { $min = 0; }
 if (!(isset($orderby))) { $orderby = ""; }
 if (!(isset($show))) { $show = ""; }
-if (!(isset($ratenum))) { $ratenum = ""; }
-if (!(isset($ratetype))) { $ratetype = ""; }
-if (strlen($mode) == 1 && ctype_alnum($mode)) show_merchants($mode, $field, $order);
 
 switch($mode) {	
 
